@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import time 
-import pygame, sys
+import pygame, sys, random
 from sys import exit
 
 pygame.init()
@@ -14,10 +14,19 @@ SelecObject = 0
 menu_item = ()
 valueMouse = 0
 premiereMain = False
+
+def compareSequences(list1, list2):
+	for i in range(0, len(list1)-1):
+		if list1[i] != list2[i]:
+			return False
+	return True
     
 """pierre's program"""
 class Game:
     def __init__(self):
+        self.limit = 3
+        self.sequence = []
+        self.usersequence = []
         self.screen = screen
         screen.blit(background, (0, 0))
         self.sound400 = pygame.mixer.Sound("sounds/400.wav")
@@ -53,29 +62,60 @@ class Game:
         green = pygame.image.load("pierre/colors/light/green.png")
         self.screen.blit(green, (340, 340))
 
+    def Buzz(self, color):
+		pygame.mixer.stop()
+		if color == 0:
+			self.sound400.play()
+			self.LightRed()
+		elif color == 1:
+			self.sound600.play()
+			self.LightYellow()
+		elif color == 2:
+			self.sound800.play()
+			self.LightBlue()
+		elif color == 3:
+			self.sound1000.play()
+			self.LightGreen()
+		pygame.display.flip()
+		
     def Events(self):
-        while 1:
-            for event in pygame.event.get():
-                self.ResetColors()
-                pygame.mixer.stop()
-                keys = pygame.key.get_pressed()
-                
-                if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
-                    sys.exit()
+		while 1:
+			while len(self.sequence) < self.limit:
+				self.ResetColors()
+				pygame.time.delay(100)
+				color = random.randint(0,3)
+				self.sequence.append(color)
+				self.Buzz(color)
+				pygame.time.delay(500)
+				
+			while len(self.usersequence) < self.limit:
+				for event in pygame.event.get():
+					self.ResetColors()
+					keys = pygame.key.get_pressed()
+				
+					if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+						quit()
 
-                if keys[pygame.K_a]:
-                    self.sound400.play()
-                    self.LightRed();
-                if keys[pygame.K_z]:
-                    self.sound600.play()
-                    self.LightYellow();
-                if keys[pygame.K_q]:
-                    self.sound800.play()
-                    self.LightBlue();
-                if keys[pygame.K_s]:
-                    self.sound1000.play()
-                    self.LightGreen();
-            pygame.display.flip()
+					if keys[pygame.K_a]:
+						self.Buzz(0)
+						self.usersequence.append(0)
+					if keys[pygame.K_z]:
+						self.Buzz(1)
+						self.usersequence.append(1)
+					if keys[pygame.K_q]:
+						self.Buzz(2)
+						self.usersequence.append(2)
+					if keys[pygame.K_s]:
+						self.Buzz(3)
+						self.usersequence.append(3)
+			
+			if compareSequences(self.sequence, self.usersequence):
+				pygame.time.delay(1000)
+				self.sequence = []
+				self.usersequence = []
+				self.limit = self.limit+1
+			else:
+				quit()
             
             
 class MenuItem(pygame.font.Font):
@@ -175,7 +215,7 @@ class GameMenu():
         self.items[self.cur_item].set_font_color(YELLOW)
         
         #print(self.cur_item) 
-    global SelecObject
+        global SelecObject
         SelecObject = self.cur_item
     
     def set_mouse_selection(self, item, mpos):
@@ -186,7 +226,7 @@ class GameMenu():
             item.set_font_color(YELLOW)
             item.set_italic(True)
             global valueMouse
-        valueMouse = item.text  
+            valueMouse = item.text  
         else:
             item.set_font_color(WHITE)
             item.set_italic(False)
@@ -220,13 +260,13 @@ class GameMenu():
             
             actualHour = time.strftime('%d/%m/%y %H:%M:%S',time.localtime()) 
             letter = pygame.font.Font('Alphabet Souplings.ttf', 15)
-        text = letter.render(actualHour, 1, (255, 255, 255))
-        textpos = text.get_rect()
-        textpos.right = screen.get_width() - 120
-        textpos.top = screen.get_height()/14
+            text = letter.render(actualHour, 1, (255, 255, 255))
+            textpos = text.get_rect()
+            textpos.right = screen.get_width() - 120
+            textpos.top = screen.get_height()/14
             screen.blit(text, textpos)
 
-        hand = pygame.image.load("main.png").convert_alpha()
+            hand = pygame.image.load("main.png").convert_alpha()
         
                 
             for item in self.items:
@@ -236,14 +276,14 @@ class GameMenu():
                     #print(valueMouse)
                     if valueMouse == 'Play':
                         position_handPlay = (430,140)
-                    screen.blit(hand, position_handPlay)
-                elif valueMouse == 'Settings':
-                    position_handSettings = (320,270)
-                    screen.blit(hand, position_handSettings)
-                elif valueMouse == 'Quit':
-                    position_handQuit = (420,410)
-                    screen.blit(hand, position_handQuit)		
-                self.screen.blit(item.label, item.position)
+                        screen.blit(hand, position_handPlay)
+                    elif valueMouse == 'Settings':
+                        position_handSettings = (320,270)
+                        screen.blit(hand, position_handSettings)
+                    elif valueMouse == 'Quit':
+                        position_handQuit = (420,410)
+                        screen.blit(hand, position_handQuit)		
+                    self.screen.blit(item.label, item.position)
 
             """
             if mouse click or press enter on the quit button, the program quits
@@ -257,23 +297,23 @@ class GameMenu():
                     elif valueMouse == 'Quit':
                         mainloop = False
         
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                if menu_items[SelecObject] == 'Play':
-                    game = Game()
-                elif menu_items[SelecObject] == 'Quit':	
-                    mainloop = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    if menu_items[SelecObject] == 'Play':
+                        game = Game()
+                    elif menu_items[SelecObject] == 'Quit':	
+                        mainloop = False
                     
         #probleme resolu
             if self.items[SelecObject].get_italic():
                 if menu_items[SelecObject] == 'Play':
                     position_perso = (430,140)
-                screen.blit(hand, position_perso)
-            elif menu_items[SelecObject] == 'Settings':
-                position_handSettings = (320,270)
+                    screen.blit(hand, position_perso)
+                elif menu_items[SelecObject] == 'Settings':
+                    position_handSettings = (320,270)
                     screen.blit(hand, position_handSettings)
-            elif menu_items[SelecObject] == 'Quit':    	
-                position_handQuit = (420,410)
+                elif menu_items[SelecObject] == 'Quit':    	
+                    position_handQuit = (420,410)
                     screen.blit(hand, position_handQuit)	
             
             pygame.display.flip()
