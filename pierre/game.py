@@ -105,6 +105,7 @@ class Game:
 				self.usersequence = []
 				self.limit = self.limit+1
 			else:
+				print "USER FAIL"
 				quit()
 				
 
