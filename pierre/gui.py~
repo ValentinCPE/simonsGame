@@ -6,7 +6,7 @@ from pygame.locals import *
 class Game:
 	def __init__(self):
 		pygame.init()
-		self.screen = pygame.display.set_mode((pygame.display.Info().current_w, pygame.display.Info().current_h))
+		self.screen = pygame.display.set_mode([630, 630])
 		self.sound400 = pygame.mixer.Sound("sounds/400.wav")
 		self.sound600 = pygame.mixer.Sound("sounds/600.wav")
 		self.sound800 = pygame.mixer.Sound("sounds/800.wav")
