@@ -15,7 +15,7 @@ menu_item = ()
 valueMouse = 0
 premiereMain = False
 
-
+activeSound = True
 
 def compareSequences(list1, list2):
 	for i in range(0, len(list1)-1):
@@ -66,26 +66,32 @@ class Game:
 		green = pygame.image.load("pierre/colors/light/green.png")
 		self.screen.blit(green, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/2))
 
-	def Buzz(self, color):
+	def Buzz(self, color, sound):
 		pygame.mixer.stop()
 		if color == 0:
-			self.sound400.play()
-			self.LightRed()
+                    if sound:
+                        self.sound400.play()
+                    self.LightRed()
 		elif color == 1:
+                    if sound:
 			self.sound600.play()
-			self.LightYellow()
+                    self.LightYellow()
 		elif color == 2:
+                    if sound:
 			self.sound800.play()
-			self.LightBlue()
+                    self.LightBlue()
 		elif color == 3:
+                    if sound:
 			self.sound1000.play()
-			self.LightGreen()
+                    self.LightGreen()
 		pygame.display.flip()
 
 	def Events(self):
                 score = 0
                 letter = pygame.font.Font('Alphabet Souplings.ttf', 15)
 		while 1:
+
+                        print(activeSound)    
                         screen.blit(self.backgroundDark, (0, 0))
                         text = letter.render(("Score: " + str(score)), 1, (255, 255, 255))
                         textpos = text.get_rect()
@@ -97,7 +103,7 @@ class Game:
 				pygame.time.delay(100)
 				color = random.randint(0,3)
 				self.sequence.append(color)
-				self.Buzz(color)
+				self.Buzz(color, activeSound)
 				pygame.time.delay(500)
 				
 			while len(self.usersequence) < self.limit:
@@ -107,18 +113,17 @@ class Game:
 				
 					if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
 						quit()
-
 					if keys[pygame.K_a]:
-						self.Buzz(0)
+						self.Buzz(0, activeSound)
 						self.usersequence.append(0)
 					if keys[pygame.K_z]:
-						self.Buzz(1)
+						self.Buzz(1, activeSound)
 						self.usersequence.append(1)
 					if keys[pygame.K_q]:
-						self.Buzz(2)
+						self.Buzz(2, activeSound)
 						self.usersequence.append(2)
 					if keys[pygame.K_s]:
-						self.Buzz(3)
+						self.Buzz(3, activeSound)
 						self.usersequence.append(3)
 			
 			if compareSequences(self.sequence, self.usersequence):
@@ -245,7 +250,7 @@ class GameSettings():
     
     
     def run(self):
-        activeSound = True
+        global activeSound
         mainloop = True
         while mainloop:
             # Limit frame speed to 50 FPS
@@ -303,11 +308,12 @@ class GameSettings():
             screen.blit(text, textpos)
 
             hand = pygame.image.load("main.png").convert_alpha()
-            
+
             if activeSound:
                 sound = pygame.image.load("sonactif.png").convert_alpha()
             else:
                 sound = pygame.image.load("soninactif.png").convert_alpha()
+                
             
                 
             for item in self.items:
