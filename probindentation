@@ -1,0 +1,2 @@
+perl -i.bak -pe "s/\t/' 'x(8-pos()%8)/eg" file.py
+
