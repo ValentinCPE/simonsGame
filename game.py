@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time 
+import serial
 import pygame, sys, random
 from sys import exit
 
@@ -14,8 +15,19 @@ SelecObject = 0
 menu_item = ()
 valueMouse = 0
 premiereMain = False
-
 activeSound = True
+try:
+    ser = serial.Serial("/dev/ttyACM0",timeout=1) 
+    code="1c 255w"
+    ser.write(code.encode('utf-8'))
+    code="2c 0w"
+    ser.write(code.encode('utf-8'))
+    code="3c 0w"
+    ser.write(code.encode('utf-8'))
+    code="4c 0w"
+    ser.write(code.encode('utf-8'))
+except:
+    print("arduino non connecte")
 
 def compareSequences(list1, list2):
         for i in range(0, len(list1)-1):
@@ -41,31 +53,64 @@ class Game:
                pygame.mixer.pre_init(44100,-50,128)
 
         def ResetColors(self):
-               red = pygame.image.load("colors/normal/red.png")
-               self.screen.blit(red, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/14))
-               yellow = pygame.image.load("colors/normal/yellow.png")
-               self.screen.blit(yellow, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/14))
-               blue = pygame.image.load("colors/normal/blue.png")
-               self.screen.blit(blue, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/2))
-               green = pygame.image.load("colors/normal/green.png")
-               self.screen.blit(green, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/2))
-               pygame.display.flip()
+            try:
+               code="2c 0w"
+               ser.write(code.encode('utf-8'))
+               code="3c 0w"
+               ser.write(code.encode('utf-8'))
+               code="4c 0w"
+               ser.write(code.encode('utf-8'))
+            except:
+               print("arduino non connecte") 
+            red = pygame.image.load("colors/normal/red.png")
+            self.screen.blit(red, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/14))
+            yellow = pygame.image.load("colors/normal/yellow.png")
+            self.screen.blit(yellow, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/14))
+            blue = pygame.image.load("colors/normal/blue.png")
+            self.screen.blit(blue, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/2))
+            green = pygame.image.load("colors/normal/green.png")
+            self.screen.blit(green, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/2))
+            pygame.display.flip()
+            
 
         def LightRed(self):
-               red = pygame.image.load("colors/light/red.png")
-               self.screen.blit(red, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/14))
+            red = pygame.image.load("colors/light/red.png")
+            self.screen.blit(red, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/14))
+            try:   
+               code="2c 255w"
+               ser.write(code.encode('utf-8'))
+            except:
+                print("arduino non connecte")
+
 
         def LightYellow(self):
-               yellow = pygame.image.load("colors/light/yellow.png")
-               self.screen.blit(yellow, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/14))
+            yellow = pygame.image.load("colors/light/yellow.png")
+            self.screen.blit(yellow, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/14))
+            try:
+               code="2c 255w"
+               ser.write(code.encode('utf-8'))
+               code="3c 255w"
+               ser.write(code.encode('utf-8'))
+            except:
+                print("arduino non connecte")
 
         def LightBlue(self):
-               blue = pygame.image.load("colors/light/blue.png")
-               self.screen.blit(blue, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/2))
+            blue = pygame.image.load("colors/light/blue.png")
+            self.screen.blit(blue, (pygame.display.Info().current_w/3.5, pygame.display.Info().current_h/2))
+            try:
+               code="4c 255w"
+               ser.write(code.encode('utf-8'))
+            except:
+                print("arduino non connecte")
 
         def LightGreen(self):
-               green = pygame.image.load("colors/light/green.png")
-               self.screen.blit(green, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/2))
+            green = pygame.image.load("colors/light/green.png")
+            self.screen.blit(green, (pygame.display.Info().current_w/1.8, pygame.display.Info().current_h/2))
+            try:
+               code="3c 255w"
+               ser.write(code.encode('utf-8'))
+            except:
+                print("arduino non connecte")
 
         def Buzz(self, color, sound):
                pygame.mixer.stop()
